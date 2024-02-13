@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Employee Management</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="container">
+  <h2>Employee Management</h2>
+  <div class="tabs">
+    <button class="tablinks" id="tab1Btn" onclick="openTab('tab1')">View Employees</button>
+    <button class="tablinks" id="tab2Btn" onclick="openTab('tab2')">Add Employee</button>
+  </div>
+
+  <div id="tab1" class="tabcontent">
+    <!-- Employee data will be displayed here -->
+  </div>
+
+  <div id="tab2" class="tabcontent">
+    <!-- Employee form will be displayed here -->
+    <div id="employeeFormContainer" style="display: none;">
+      <form id="employeeForm">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required><br>
+        <label for="employeeId">Employee ID:</label>
+        <input type="text" id="employeeId" name="employeeId" required><br>
+        <label for="dob">Date of Birth:</label>
+        <input type="date" id="dob" name="dob" required><br>
+        <label for="department">Department:</label>
+        <input type="text" id="department" name="department" required><br>
+        <label for="employmentType">Employment Type:</label>
+        <select id="employmentType" name="employmentType" required>
+          <option value="">Select Employment Type</option>
+          <option value="full-time">Full-time</option>
+          <option value="part-time">Part-time</option>
+          <option value="contract">Contract</option>
+        </select><br>
+        <button type="submit">Submit</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
