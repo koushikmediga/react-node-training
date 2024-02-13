@@ -84,6 +84,8 @@ document.addEventListener('DOMContentLoaded', function () {
       .then(response => response.json())
       .then(data => {
         console.log('Employee added successfully:', data);
+        // Fetch and display the updated list of employees in tab 1
+        fetchAndDisplayEmployees();
         // Redirect to tab1 to show all employees after adding employee
         openTab('tab1');
       })
@@ -91,4 +93,33 @@ document.addEventListener('DOMContentLoaded', function () {
         console.error('Error adding employee:', error);
       });
   }
+  
+  function handleEdit(employeeId) {
+    // Ask for confirmation before proceeding with edit
+    if (confirm('Are you sure you want to edit this employee?')) {
+        // Fetch the employee data from the backend based on the employeeId
+        fetch(`http://localhost:3000/employees/${employeeId}`)
+            .then(response => response.json())
+            .then(employee => {
+                // Prefill the employee data in the form in tab2
+                document.getElementById('name').value = employee.name;
+                document.getElementById('employeeId').value = employee.employeeId;
+                document.getElementById('dob').value = employee.dob;
+                document.getElementById('department').value = employee.department;
+                document.getElementById('employmentType').value = employee.employmentType;
+
+                // Open tab2
+                openTab('tab2');
+            })
+            .catch(error => {
+                console.error('Error fetching employee data:', error);
+            });
+    } else {
+        // If user cancels the edit, do nothing
+        console.log('Edit canceled by user');
+    }
+}
+
+
+  
   
