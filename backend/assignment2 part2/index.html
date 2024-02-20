@@ -10,17 +10,29 @@
 <div class="container">
   <h2>Employee Management</h2>
   <div class="tabs">
-    <button class="tablinks" id="tab1Btn" onclick="openTab('tab1')">View Employees</button>
-    <button class="tablinks" id="tab2Btn" onclick="openTab('tab2')">Add Employee</button>
+    <button class="tablinks" id="viewEmployeesBtn" onclick="openTab('tab1')">View Employees</button>
+    <button class="tablinks" id="addEmployeeBtn" onclick="openTab('tab2')">Add Employee</button>
   </div>
+  
 
   <div id="tab1" class="tabcontent">
-    <!-- Employee data will be displayed here -->
+      <table id="employeeTable">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Employee ID</th>
+            <th>Date of Birth</th>
+            <th>Department</th>
+            <th>Employment Type</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="employeeList"></tbody>
+      </table>
   </div>
 
   <div id="tab2" class="tabcontent">
-    <!-- Employee form will be displayed here -->
-    <div id="employeeFormContainer" style="display: none;">
+    <div id="employeeFormContainer">
       <form id="employeeForm">
         <label for="name">Name:</label>
         <input type="text" id="name" name="name" required><br>

@@ -1,125 +1,144 @@
-document.addEventListener('DOMContentLoaded', function () {
-    // Display tab1 by default
-    openTab('tab1');
-  
-    // Fetch and display employees when tab1 is opened
-    document.getElementById('tab1Btn').addEventListener('click', function() {
-      fetchAndDisplayEmployees();
-    });
-  
-    // Handle form submission for adding employee
-    document.getElementById('employeeForm').addEventListener('submit', function(event) {
-      event.preventDefault();
-      addEmployee();
-    });
-  });
-  
-  function openTab(tabName) {
-    // Hide all tab contents
-    var tabcontents = document.getElementsByClassName('tabcontent');
-    for (var i = 0; i < tabcontents.length; i++) {
-      tabcontents[i].style.display = 'none';
-    }
-  
-    // Deactivate all tab buttons
-    var tablinks = document.getElementsByClassName('tablinks');
-    for (var i = 0; i < tablinks.length; i++) {
-      tablinks[i].classList.remove('active');
-    }
-  
-    // Display the selected tab content
-    document.getElementById(tabName).style.display = 'block';
-  
-    // Activate the selected tab button
-    document.getElementById(tabName + 'Btn').classList.add('active');
-  
-    // If the selected tab is tab2, display the employee form
-    if (tabName === 'tab2') {
-      document.getElementById('employeeFormContainer').style.display = 'block';
-    }
-  }
-  
-  function fetchAndDisplayEmployees() {
+// Function to fetch and display all employees in Tab1
+function fetchAndDisplayEmployees() {
     fetch('http://localhost:3000/employees')
       .then(response => response.json())
       .then(data => {
-        var tableHtml = '<table>';
-        tableHtml += '<tr><th>Name</th><th>Employee ID</th><th>Date of Birth</th><th>Department</th><th>Employment Type</th><th>Active</th></tr>';
+        // Update UI to display employee data in Tab1
+        const employeeTable = document.getElementById('employeeTable');
+        employeeTable.innerHTML = ''; // Clear existing data
         data.forEach(employee => {
-          tableHtml += `<tr>
-                        <td>${employee.name}</td>
-                        <td>${employee.employeeId}</td>
-                        <td>${employee.dob}</td>
-                        <td>${employee.department}</td>
-                        <td>${employee.employmentType}</td>
-                        <td>${employee.isActive ? 'Yes' : 'No'}</td>
-                        <td>
-                          <button class="editBtn" onclick="handleEdit(${employee.id})">Edit</button>
-                          <button class="deleteBtn" onclick="handleDelete(${employee.id})">Delete</button>
-                        </td>
-                      </tr>`;
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${employee.name}</td>
+            <td>${employee.employeeId}</td>
+            <td>${employee.dob}</td>
+            <td>${employee.department}</td>
+            <td>${employee.employmentType}</td>
+            <td>${employee.isActive ? 'Yes' : 'No'}</td>
+            <td>
+              <button onclick="editEmployee(${employee.id})">Edit</button>
+              <button onclick="deleteEmployee(${employee.id})">Delete</button>
+            </td>
+          `;
+          employeeTable.appendChild(row);
         });
-        tableHtml += '</table>';
-        document.getElementById('tab1').innerHTML = tableHtml;
       })
       .catch(error => {
         console.error('Error fetching employees:', error);
       });
   }
   
-  function addEmployee() {
-    const formData = new FormData(document.getElementById('employeeForm'));
-    const employeeData = {};
-    formData.forEach((value, key) => {
-      employeeData[key] = value;
-    });
-  
+  function addEmployee(formData) {
     fetch('http://localhost:3000/employees', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+            'Content-Type': 'application/json',
         },
-        body: JSON.stringify(employeeData),
-      })
-      .then(response => response.json())
-      .then(data => {
-        console.log('Employee added successfully:', data);
-        // Fetch and display the updated list of employees in tab 1
-        fetchAndDisplayEmployees();
-        // Redirect to tab1 to show all employees after adding employee
-        openTab('tab1');
-      })
-      .catch(error => {
-        console.error('Error adding employee:', error);
-      });
-  }
-  
-  function handleEdit(employeeId) {
-    // Ask for confirmation before proceeding with edit
-    if (confirm('Are you sure you want to edit this employee?')) {
-        // Fetch the employee data from the backend based on the employeeId
-        fetch(`http://localhost:3000/employees/${employeeId}`)
-            .then(response => response.json())
-            .then(employee => {
-                // Prefill the employee data in the form in tab2
-                document.getElementById('name').value = employee.name;
-                document.getElementById('employeeId').value = employee.employeeId;
-                document.getElementById('dob').value = employee.dob;
-                document.getElementById('department').value = employee.department;
-                document.getElementById('employmentType').value = employee.employmentType;
+        body: JSON.stringify(formData),
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Update UI to display the new employee in the employee list
+        const employeeTable = document.getElementById('employeeTable');
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${data.name}</td>
+            <td>${data.employeeId}</td>
+            <td>${data.dob}</td>
+            <td>${data.department}</td>
+            <td>${data.employmentType}</td>
+            <td>${data.isActive ? 'Yes' : 'No'}</td>
+            <td>
+                <button onclick="editEmployee(${data.id})">Edit</button>
+                <button onclick="deleteEmployee(${data.id})">Delete</button>
+            </td>
+        `;
+        employeeTable.appendChild(row);
 
-                // Open tab2
-                openTab('tab2');
-            })
-            .catch(error => {
-                console.error('Error fetching employee data:', error);
-            });
-    } else {
-        // If user cancels the edit, do nothing
-        console.log('Edit canceled by user');
-    }
+        // Redirect to Tab1 after successful submission
+        document.getElementById('tab1Btn').click(); // Simulate click on Tab1 button
+    })
+    .catch(error => {
+        console.error('Error adding employee:', error);
+    });
 }
 
 
   
+  // Function to fetch and populate employee details in Tab2 for editing
+  function editEmployee(employeeId) {
+    fetch(`http://localhost:3000/employees/id/${employeeId}`)
+      .then(response => response.json())
+      .then(employee => {
+        // Populate form fields in Tab2 with employee details
+        document.getElementById('name').value = employee.name;
+        document.getElementById('employeeId').value = employee.employeeId;
+        document.getElementById('dob').value = employee.dob;
+        document.getElementById('department').value = employee.department;
+        document.getElementById('employmentType').value = employee.employmentType;
+        
+        // Show Tab2
+        openTab('tab2');
+      })
+      .catch(error => {
+        console.error('Error fetching employee details:', error);
+      });
+  }
+
   
+  // Function to update employee details in Tab2
+  function updateEmployee(employeeId, formData) {
+    fetch(`http://localhost:3000/employees/${employeeId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formData),
+    })
+    .then(response => response.json())
+    .then(data => {
+      // Redirect to Tab1 after successful update
+      fetchAndDisplayEmployees();
+      document.getElementById('tab1Btn').click(); // Simulate click on Tab1 button
+    })
+    .catch(error => {
+      console.error('Error updating employee:', error);
+    });
+  }
+  
+  // Function to delete an employee in Tab1
+  function deleteEmployee(employeeId) {
+    fetch(`http://localhost:3000/employees/id/${employeeId}`, {
+      method: 'DELETE',
+    })
+    .then(() => {
+        // Reload the page or refresh employee list after deletion
+        fetchAndDisplayEmployees();
+        document.getElementById('tab1').click(); // Simulate click on Tab1 button
+      })
+      .catch(error => {
+        console.error('Error deleting employee:', error);
+      });
+  }
+
+  function openTab(tabId) {
+    // Hide all tabs
+    const tabs = document.getElementsByClassName('tabcontent');
+    for (let i = 0; i < tabs.length; i++) {
+        tabs[i].style.display = 'none';
+    }
+
+    // Show the selected tab
+    document.getElementById(tabId).style.display = 'block';
+}
+
+
+document.getElementById('viewEmployeesBtn').addEventListener('click', function() {
+    openTab('tab1'); // Show Tab1
+    fetchAndDisplayEmployees(); // Fetch and display employees
+});
+
+document.getElementById('addEmployeeBtn').addEventListener('click', function() {
+    openTab('tab2'); // Show Tab2
+});
+

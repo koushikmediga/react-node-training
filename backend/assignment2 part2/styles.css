@@ -46,7 +46,6 @@ button:hover {
 }
 /* CSS for the employee form */
 #employeeFormContainer {
-  display: none;
   margin-top: 20px;
 }
 
